@@ -1,0 +1,4 @@
+* text=auto eol=lf
+licenses/** -text -whitespace
+*.dll binary
+*.png binary

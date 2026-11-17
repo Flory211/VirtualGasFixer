@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+build/
+dist/
+*.spec
+!app.spec
+.tools/
+installer/payload-*.nsh
+/settings.json
+/docs/superpowers/
+/docs/verification.md
+/docs/*.json
+/docs/*.log
+/docs/*.png
+/docs/*-pid.txt
+/docs/aerofly-device-detection.txt
