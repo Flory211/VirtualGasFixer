@@ -15,6 +15,7 @@ class UiTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / 'settings.json'
             window = App(path)
+            self.assertEqual(window.windowTitle(), 'VirtualGasFixer')
             self.assertEqual(window.read_settings().axis, 'ly')
             self.assertEqual(window.read_settings().speed, 100)
             window.show()

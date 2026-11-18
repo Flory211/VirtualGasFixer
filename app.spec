@@ -16,7 +16,8 @@ a.binaries = [entry for entry in a.binaries
               if Path(entry[0]).name.lower() != 'icuuc.dll'
               and not Path(entry[0]).name.lower().startswith('icudt')]
 pyz = PYZ(a.pure)
-exe = EXE(pyz, a.scripts, [], exclude_binaries=True, name='DJIVirtualGasFixer',
+exe = EXE(pyz, a.scripts, [], exclude_binaries=True, name='VirtualGasFixer',
+          version='installer/app-version.txt',
           debug=False, bootloader_ignore_signals=False, strip=False, upx=False,
           console=False, disable_windowed_traceback=False)
-coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False, name='DJIVirtualGasFixer')
+coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False, name='VirtualGasFixer')

@@ -8,5 +8,5 @@ if ($LASTEXITCODE -ne 0) { throw 'Tests failed' }
 if ($LASTEXITCODE -ne 0) { throw 'License collection failed' }
 & $projectPython -m PyInstaller --noconfirm app.spec
 if ($LASTEXITCODE -ne 0) { throw 'Build failed' }
-Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'README.md') -Destination (Join-Path $PSScriptRoot 'dist\DJIVirtualGasFixer\README.md') -Force
-Write-Output (Join-Path $PSScriptRoot 'dist\DJIVirtualGasFixer\DJIVirtualGasFixer.exe')
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'README.md') -Destination (Join-Path $PSScriptRoot 'dist\VirtualGasFixer\README.md') -Force
+Write-Output (Join-Path $PSScriptRoot 'dist\VirtualGasFixer\VirtualGasFixer.exe')

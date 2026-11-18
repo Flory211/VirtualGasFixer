@@ -1,12 +1,27 @@
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from gasfix.core import Settings
-from gasfix.settings import load, save
+from gasfix.settings import default_path, load, save
 
 
 class SettingsTests(unittest.TestCase):
+    def test_renamed_app_restores_legacy_settings_without_overwriting_them(self):
+        with tempfile.TemporaryDirectory() as d, patch.dict('os.environ', {'LOCALAPPDATA': d}):
+            legacy = Path(d) / 'DJIVirtualGasFixer' / 'settings.json'
+            settings = Settings(on_start='hold', speed=150)
+            save(legacy, settings, .61)
+            original = legacy.read_bytes()
+            current = default_path()
+            self.assertEqual(current, Path(d) / 'VirtualGasFixer' / 'settings.json')
+            restored, level, warning = load(current)
+            self.assertEqual((restored.speed, level, warning), (150, .61, ''))
+            save(current, Settings(on_start='hold', speed=200), .72)
+            self.assertEqual(load(current)[1], .72)
+            self.assertEqual(legacy.read_bytes(), original)
+
     def test_roundtrip_and_start_policy(self):
         with tempfile.TemporaryDirectory() as d:
             path = Path(d) / 'settings.json'

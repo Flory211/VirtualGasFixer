@@ -9,7 +9,7 @@ from .core import Settings
 
 
 def default_path():
-    return Path(os.environ.get('LOCALAPPDATA', Path.home())) / 'DJIVirtualGasFixer' / 'settings.json'
+    return Path(os.environ.get('LOCALAPPDATA', Path.home())) / 'VirtualGasFixer' / 'settings.json'
 
 
 def load(path):
@@ -21,6 +21,11 @@ def load(path):
             raise ValueError('Неверный сохранённый уровень')
         return settings, level if settings.on_start == 'hold' else 0, ''
     except FileNotFoundError:
+        # Read the old file only when the new default has never been saved.
+        # The first normal save writes the new location; the old file stays intact.
+        if Path(path) == default_path():
+            legacy = default_path().parent.parent / 'DJIVirtualGasFixer' / 'settings.json'
+            return load(legacy)
         return Settings(), 0, ''
     except (OSError, ValueError, TypeError, AttributeError) as error:
         return Settings(), 0, f'Не удалось прочитать настройки: {error}. Использованы начальные значения.'

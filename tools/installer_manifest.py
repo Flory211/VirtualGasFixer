@@ -2,10 +2,10 @@
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
-payload = root / 'dist' / 'DJIVirtualGasFixer'
+payload = root / 'dist' / 'VirtualGasFixer'
 destination = root / 'installer'
 files = sorted(path for path in payload.rglob('*') if path.is_file())
-if not files or not (payload / 'DJIVirtualGasFixer.exe').is_file():
+if not files or not (payload / 'VirtualGasFixer.exe').is_file():
     raise SystemExit('Build the application first with build.ps1')
 
 

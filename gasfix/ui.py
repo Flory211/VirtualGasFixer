@@ -37,7 +37,7 @@ class App(QMainWindow):
         self.engine = None
         self.last_save = time.monotonic()
         self.save_error = ''
-        self.setWindowTitle('DJI Virtual Gas Fixer')
+        self.setWindowTitle('VirtualGasFixer')
         self.resize(570, 730)
         panel = QWidget()
         layout = QVBoxLayout(panel)

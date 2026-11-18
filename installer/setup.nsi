@@ -5,15 +5,16 @@ Unicode true
 !include "x64.nsh"
 !include "WinVer.nsh"
 
-!define PRODUCT "DJI Virtual Gas Fixer"
-!define VERSION "1.0.0"
+!define PRODUCT "VirtualGasFixer"
+!define VERSION "1.0.1"
+; Stable private identifiers let this installer update version 1.0.0 in place.
 !define APPKEY "Software\DJIVirtualGasFixer"
 !define UNINSTALLKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\DJIVirtualGasFixer"
 !define INSTALLID "DJIVirtualGasFixer|NSIS|1"
 
 Name "${PRODUCT}"
-OutFile "..\dist\DJIVirtualGasFixer-Setup-${VERSION}.exe"
-InstallDir "$LOCALAPPDATA\Programs\DJIVirtualGasFixer"
+OutFile "..\dist\VirtualGasFixer-Setup-${VERSION}.exe"
+InstallDir "$LOCALAPPDATA\Programs\VirtualGasFixer"
 InstallDirRegKey HKCU "${APPKEY}" "InstallDir"
 RequestExecutionLevel user
 SetCompressor /SOLID lzma
@@ -21,7 +22,7 @@ SetCompressorDictSize 32
 ShowInstDetails show
 ShowUninstDetails show
 BrandingText "${PRODUCT}"
-VIProductVersion "1.0.0.0"
+VIProductVersion "1.0.1.0"
 VIAddVersionKey /LANG=1049 "ProductName" "${PRODUCT}"
 VIAddVersionKey /LANG=1049 "FileDescription" "Мастер установки ${PRODUCT}"
 VIAddVersionKey /LANG=1049 "FileVersion" "${VERSION}"
@@ -35,7 +36,7 @@ VIAddVersionKey /LANG=1049 "LegalCopyright" ""
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
-!define MUI_FINISHPAGE_RUN "$INSTDIR\DJIVirtualGasFixer.exe"
+!define MUI_FINISHPAGE_RUN "$INSTDIR\VirtualGasFixer.exe"
 !define MUI_FINISHPAGE_RUN_TEXT "Запустить ${PRODUCT}"
 !insertmacro MUI_PAGE_FINISH
 !define MUI_UNCONFIRMPAGE_TEXT_TOP "Будет удалена программа ${PRODUCT}.$\r$\nСохранённые настройки газа останутся для повторной установки."
@@ -95,6 +96,27 @@ Section "Программа и меню «Пуск»" MainSection
   ClearErrors
   !include "payload-install.nsh"
   IfErrors install_failed
+  ; Remove only the former executable and known shortcuts of a marked install.
+  FileOpen $0 "$INSTDIR\install-id.txt" r
+  IfErrors legacy_cleanup_done
+  FileRead $0 $1
+  FileClose $0
+  StrCmp $1 "${INSTALLID}" 0 legacy_cleanup_done
+  ${If} ${FileExists} "$INSTDIR\DJIVirtualGasFixer.exe"
+    ClearErrors
+    Delete "$INSTDIR\DJIVirtualGasFixer.exe"
+    IfErrors install_failed
+  ${EndIf}
+  Delete "$SMPROGRAMS\DJI Virtual Gas Fixer\DJI Virtual Gas Fixer.lnk"
+  Delete "$SMPROGRAMS\DJI Virtual Gas Fixer\Инструкция.lnk"
+  Delete "$SMPROGRAMS\DJI Virtual Gas Fixer\Удалить.lnk"
+  RMDir "$SMPROGRAMS\DJI Virtual Gas Fixer"
+  ReadRegDWORD $0 HKCU "${APPKEY}" "DesktopShortcut"
+  StrCmp $0 1 0 legacy_cleanup_done
+  Delete "$DESKTOP\DJI Virtual Gas Fixer.lnk"
+  CreateShortcut "$DESKTOP\${PRODUCT}.lnk" "$INSTDIR\VirtualGasFixer.exe"
+legacy_cleanup_done:
+  ClearErrors
   SetOutPath "$INSTDIR"
   FileOpen $0 "$INSTDIR\install-id.txt" w
   IfErrors install_failed
@@ -103,14 +125,14 @@ Section "Программа и меню «Пуск»" MainSection
   WriteUninstaller "$INSTDIR\Uninstall.exe"
   IfErrors install_failed
   CreateDirectory "$SMPROGRAMS\${PRODUCT}"
-  CreateShortcut "$SMPROGRAMS\${PRODUCT}\${PRODUCT}.lnk" "$INSTDIR\DJIVirtualGasFixer.exe"
+  CreateShortcut "$SMPROGRAMS\${PRODUCT}\${PRODUCT}.lnk" "$INSTDIR\VirtualGasFixer.exe"
   CreateShortcut "$SMPROGRAMS\${PRODUCT}\Инструкция.lnk" "$WINDIR\notepad.exe" '$\"$INSTDIR\README.md$\"'
   CreateShortcut "$SMPROGRAMS\${PRODUCT}\Удалить.lnk" "$INSTDIR\Uninstall.exe"
   WriteRegStr HKCU "${APPKEY}" "InstallDir" "$INSTDIR"
   WriteRegStr HKCU "${UNINSTALLKEY}" "DisplayName" "${PRODUCT}"
   WriteRegStr HKCU "${UNINSTALLKEY}" "DisplayVersion" "${VERSION}"
   WriteRegStr HKCU "${UNINSTALLKEY}" "InstallLocation" "$INSTDIR"
-  WriteRegStr HKCU "${UNINSTALLKEY}" "DisplayIcon" "$INSTDIR\DJIVirtualGasFixer.exe"
+  WriteRegStr HKCU "${UNINSTALLKEY}" "DisplayIcon" "$INSTDIR\VirtualGasFixer.exe"
   WriteRegStr HKCU "${UNINSTALLKEY}" "UninstallString" '$\"$INSTDIR\Uninstall.exe$\"'
   WriteRegStr HKCU "${UNINSTALLKEY}" "QuietUninstallString" '$\"$INSTDIR\Uninstall.exe$\" /S'
   WriteRegDWORD HKCU "${UNINSTALLKEY}" "NoModify" 1
@@ -122,10 +144,11 @@ install_failed:
   SetErrorLevel 1
   Abort
 installation_done:
+  SetErrorLevel 0
 SectionEnd
 
 Section /o "Ярлык на рабочем столе" DesktopSection
-  CreateShortcut "$DESKTOP\${PRODUCT}.lnk" "$INSTDIR\DJIVirtualGasFixer.exe"
+  CreateShortcut "$DESKTOP\${PRODUCT}.lnk" "$INSTDIR\VirtualGasFixer.exe"
   WriteRegDWORD HKCU "${APPKEY}" "DesktopShortcut" 1
 SectionEnd
 

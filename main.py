@@ -57,7 +57,7 @@ def diagnostics(mode):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='DJI Virtual Gas Fixer')
+    parser = argparse.ArgumentParser(description='VirtualGasFixer')
     parser.add_argument('--probe', action='store_true')
     parser.add_argument('--self-test-output', action='store_true')
     parser.add_argument('--integration-test', action='store_true')
@@ -87,12 +87,13 @@ def main():
     kernel = c.WinDLL('kernel32.dll', use_last_error=True)
     create = bind(kernel, 'CreateMutexW', [c.c_void_p, c.c_bool, c.c_wchar_p], c.c_void_p)
     close = bind(kernel, 'CloseHandle', [c.c_void_p], c.c_bool)
+    # Keep the instance ID stable so an older installed version is also detected.
     mutex = create(None, False, 'Local\\DJIVirtualGasFixer')
     if not mutex:
         raise OSError(c.get_last_error(), 'Cannot create instance mutex')
     try:
         if c.get_last_error() == 183:
-            QMessageBox.information(None, 'DJI Virtual Gas Fixer', 'Программа уже запущена. Найди её окно на панели задач.')
+            QMessageBox.information(None, 'VirtualGasFixer', 'Программа уже запущена. Найди её окно на панели задач.')
             return 0
         window = App(args.settings)
         window.show()

@@ -1,1 +1,1 @@
-"""DJI Virtual Gas Fixer."""
+"""VirtualGasFixer."""

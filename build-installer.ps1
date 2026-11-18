@@ -13,4 +13,4 @@ if (-not (Test-Path -LiteralPath $compiler)) {
 if ($LASTEXITCODE -ne 0) { throw 'Installer manifest failed' }
 & $compiler /V2 installer\setup.nsi
 if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
-Write-Output (Join-Path $PSScriptRoot 'dist\DJIVirtualGasFixer-Setup-1.0.0.exe')
+Write-Output (Join-Path $PSScriptRoot 'dist\VirtualGasFixer-Setup-1.0.1.exe')
